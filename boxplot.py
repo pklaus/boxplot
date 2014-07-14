@@ -22,13 +22,16 @@ def upper_quartile(values):
     # please sort values beforehand!
     return values[math.floor( ( len(values) + 1 ) / 4.0 * 3.0 ) - 1]
 
-def read_logfile(file_handle, out_file, line_filter, oldest, newest, weather, pool):
-    r = re.compile(line_filter)
+def read_logfile(file_handle, out_file, extraction, oldest, newest, weather, pool):
+
+    regex_expr, substr_expr = extraction
+    r = re.compile(regex_expr)
 
     pooling_key = {'days': '%Y-%m-%d', 'weeks': '%Y-W%W-1', 'months': '%Y-%m'}[pool]
 
     data = dict()
     for line in file_handle:
+        if substr_expr and substr_expr not in line: continue
         timestamp = datetime.strptime(line[0:19], "%Y-%m-%d_%H:%M:%S")
         datestamp = timestamp.date()
         if weather and timestamp < timestamp.replace(hour=9, minute=0, second=0):
@@ -37,8 +40,6 @@ def read_logfile(file_handle, out_file, line_filter, oldest, newest, weather, po
         if oldest and datestamp < oldest: continue
         #timestamp.replace(hour=0, minute=0, second=0)
         key = datestamp.strftime(pooling_key)
-        if line_filter in line:
-            out_file.write(line)
         result = r.search(line)
         if result:
             try:
@@ -80,7 +81,8 @@ def main():
     parser = argparse.ArgumentParser(description='Parse FHEM log files.')
     parser.add_argument('logfile', type=argparse.FileType('r'))
     parser.add_argument('outfile', nargs='?', type=argparse.FileType('w'), default=sys.stdout)
-    parser.add_argument('--filter', default=None)
+    parser.add_argument('--regex', default='[+-]?(\d+(\.\d*)?|\.\d+)([eE][+-]?\d+)?', help="A regular expression to search for in the lines of the input file. Should produce the value to parse as the first match group.")
+    parser.add_argument('--substr', default=None, help="Faster than regex only: search for fixed string in the lines of the input file.")
     parser.add_argument('--oldest', type=date_parser, default=None)
     parser.add_argument('--newest', type=date_parser, default=None)
     parser.add_argument('--weather', action='store_true', help='Assign data between 0:00 a.m. and 9:00 a.m. to the previous day')
@@ -89,7 +91,7 @@ def main():
 
     args = parser.parse_args()
 
-    read_logfile(args.logfile, args.outfile, args.filter, args.oldest, args.newest, args.weather, args.pool)
+    read_logfile(args.logfile, args.outfile, (args.regex, args.substr), args.oldest, args.newest, args.weather, args.pool)
 
 if __name__ == "__main__":
     main()
