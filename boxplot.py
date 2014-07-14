@@ -67,7 +67,7 @@ def read_logfile(file_handle, out_file, extraction, oldest, newest, weather, poo
         entry['whisker_high'] = max(data[key])
         entry['mean'] = statistics.mean(data[key])
         entry['samples'] = len(data[key])
-        out_file.write("{date} {whisker_low} {box_low} {median} {box_high} {whisker_high} {mean} {samples}\n".format(**entry))
+        out_file.write("{date} {whisker_low} {box_low} {median} {box_high} {whisker_high} {mean:.2f} {samples}\n".format(**entry))
 
 def date_parser(string):
     return datetime.strptime(string, '%Y-%m-%d').date()
