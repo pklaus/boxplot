@@ -1,4 +1,5 @@
 boxplot
 *.log
 *.svg
+__pycache__/
 
