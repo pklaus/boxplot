@@ -5,7 +5,10 @@
 import re
 import sys
 from datetime import datetime, timedelta
-import statistics
+try:
+    import statistics
+except ImportError:
+    import stats as statistics
 import math
 
 # http://mathforum.org/library/drmath/view/60969.html
