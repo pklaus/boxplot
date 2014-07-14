@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-#written for Python3.4
+#written for Python3.4 (might also work on Py2.x)
 
 import re
 import sys
@@ -14,13 +14,10 @@ import math
 # http://mathforum.org/library/drmath/view/60969.html
 def lower_quartile(values):
     # please sort values beforehand!
-    try:
-        return values[math.ceil( ( len(values) + 1 ) / 4.0 ) - 1 ]
-    except:
-        import pdb; pdb.set_trace()
+    return values[int(math.ceil( ( len(values) + 1 ) / 4.0 ) - 1 )]
 def upper_quartile(values):
     # please sort values beforehand!
-    return values[math.floor( ( len(values) + 1 ) / 4.0 * 3.0 ) - 1]
+    return values[int(math.floor( ( len(values) + 1 ) / 4.0 * 3.0 ) - 1)]
 
 def read_logfile(file_handle, out_file, extraction, oldest, newest, weather, pool):
 
