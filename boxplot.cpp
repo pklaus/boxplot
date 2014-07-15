@@ -97,6 +97,9 @@ int main( int argc, char* argv[] )
         }
         else break;
     }
+    if (data.size() != 0)
+        print_stats(dateString, data);
+
 
   return 0;
 }
